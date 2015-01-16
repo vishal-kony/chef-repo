@@ -34,7 +34,14 @@ Vagrant.configure(2) do |config|
   # Bridged networks make the machine appear as another physical device on
   # your network.
   # config.vm.network "public_network"
-
+  
+  config.vm.provision :chef_client do |chef|
+    chef.chef_server_url = "https://api.opscode.com/organizations/vish_sharma"
+    chef.validation_key_path = "./.chef/vish_sharma-validator.pem"
+    chef.validation_client_name = "vish_sharma-validator"
+    chef.node_name = "vishal_vm"
+  end
+  
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
   # the path on the guest to mount the folder. And the optional third
