@@ -9,7 +9,7 @@
 
 include_recipe 'postgresql::server'
 include_recipe 'postgresql::client'
-include_recipe 'database::master'
+include_recipe 'database::postgresql'
 
 node.default['postgresql']['pg_hba'] = 
 [
