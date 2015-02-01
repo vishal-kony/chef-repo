@@ -61,10 +61,10 @@ postgresuser = 'postgres'
 postgrespass = ''
 application_url = '10.0.2.15'
 
-text = File.read('settings_local.py')
+text = File.read('/home/osqa/settings_local.py')
 text = text.gsub(/-pguser-/, postgresuser)
 text = text.gsub(/-pgpass-/, postgrespass)
 text = text.gsub(/-applicurl-/, application_url)
 
 # To write changes to the file, use:
-File.open('settings_local.py', "w") {|file| file.puts text }
+File.open('/home/osqa/settings_local.py', "w") {|file| file.puts text }
