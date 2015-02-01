@@ -19,6 +19,7 @@ node.default['postgresql']['pg_hba'] =
 ]
 
 #creating database 'osqa'
+
 postgresql_database 'osqa' do
   connection(
     :host      => '127.0.0.1',
@@ -34,10 +35,17 @@ bash "osqa_install" do
   cwd "/home"
   code <<-EOH
   	svn co http://svn.osqa.net/svnroot/osqa/trunk/ osqa
-  	apt-get install python-pip
-  	pip install django==1.3.1
   EOH
 end
+
+##########
+
+python_pip "django" do
+  version "1.3.1"
+end
+
+############
+
 
 file_list = Array.new(['osqa.wsgi','osqa.conf','settings_local.py'])
 
@@ -57,6 +65,7 @@ for each_file in file_list
 end
 
 #setting password and username for the database 
+
 postgresuser = 'postgres'
 postgrespass = ''
 application_url = '10.0.2.15'
