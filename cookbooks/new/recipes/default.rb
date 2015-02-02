@@ -10,6 +10,7 @@
 include_recipe 'postgresql::server'
 include_recipe 'postgresql::client'
 include_recipe 'database::postgresql'
+include_recipe 'python::default'
 
 node.default['postgresql']['pg_hba'] = 
 [
@@ -38,13 +39,9 @@ bash "osqa_install" do
   EOH
 end
 
-##########
-
 python_pip "django" do
   version "1.3.1"
 end
-
-############
 
 
 file_list = Array.new(['osqa.wsgi','osqa.conf','settings_local.py'])
