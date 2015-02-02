@@ -35,7 +35,7 @@ DATABASES = {
     }
 }
 
-CACHE_BACKEND = 'memcached://172.31.34.177:11211'
+#CACHE_BACKEND = 'memcached://172.31.34.177:11211'
 #CACHE_BACKEND = 'file://%s' % os.path.join(os.path.dirname(__file__),'cache').replace('\\','/')
 #CACHE_BACKEND = 'dummy://'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'

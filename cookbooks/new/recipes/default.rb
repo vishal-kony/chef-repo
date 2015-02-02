@@ -36,6 +36,7 @@ bash "osqa_install" do
   cwd "/home"
   code <<-EOH
   	svn co http://svn.osqa.net/svnroot/osqa/trunk/ osqa
+  	apt-get install dos2unix
   EOH
 end
 
@@ -59,6 +60,10 @@ for each_file in file_list
 		path file_path
 		atomic_update true
 	end
+
+	execute "dos2unix #{file_path}" do
+		action :run
+	end
 end
 
 #setting password and username for the database 
@@ -68,9 +73,11 @@ postgrespass = ''
 application_url = '10.0.2.15'
 
 text = File.read('/home/osqa/settings_local.py')
-text = text.gsub(/-pguser-/, postgresuser)
-text = text.gsub(/-pgpass-/, postgrespass)
-text = text.gsub(/-applicurl-/, application_url)
+text = text.gsub("-pguser-", postgresuser)
+text = text.gsub("-pgpass-", postgrespass)
+text = text.gsub("-applicurl-", application_url)
 
 # To write changes to the file, use:
-File.open('/home/osqa/settings_local.py', "w") {|file| file.puts text }
+File.open('/home/osqa/settings_local.py', "w") do |file|
+	file << text
+end
