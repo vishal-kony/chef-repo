@@ -1,0 +1,11 @@
+{
+	"name": "osqa",
+	"description": "Recipe list",
+	"run_list": [
+		"recipe[apt]",
+		"recipe[subversion]",
+		"recipe[build-essential]",
+		"recipe[apache2]",
+		"recipe[new]"
+	]
+}

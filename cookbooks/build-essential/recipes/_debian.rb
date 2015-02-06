@@ -21,6 +21,7 @@ potentially_at_compile_time do
   package 'autoconf'
   package 'binutils-doc'
   package 'bison'
+  package 'gcc'
   package 'build-essential'
   package 'flex'
   package 'gettext'

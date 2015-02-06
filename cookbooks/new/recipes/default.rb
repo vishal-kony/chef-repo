@@ -11,6 +11,7 @@ include_recipe 'postgresql::server'
 include_recipe 'postgresql::client'
 include_recipe 'database::postgresql'
 include_recipe 'python::default'
+include_recipe 'apache2::mod_wsgi'
 
 node.default['postgresql']['pg_hba'] = 
 [
@@ -31,19 +32,20 @@ postgresql_database 'osqa' do
   action :create
 end
 
+cookbook_file "requirements.txt" do
+	path "/var/tmp/requirements.txt"
+	atomic_update true
+end
+
 bash "osqa_install" do
   user "root"
   cwd "/home"
   code <<-EOH
   	svn co http://svn.osqa.net/svnroot/osqa/trunk/ osqa
   	apt-get install dos2unix
+  	pip install -r /var/tmp/requirements.txt
   EOH
 end
-
-python_pip "django" do
-  version "1.3.1"
-end
-
 
 file_list = Array.new(['osqa.wsgi','osqa.conf','settings_local.py'])
 
@@ -67,17 +69,45 @@ for each_file in file_list
 end
 
 #setting password and username for the database 
+ruby_block "replacing_settings_text" do
+	block do
+		postgresuser = 'postgres'
+		postgrespass = node['postgresql']['password']['postgres']
+		application_url = '10.0.2.15'  #entering the IP of the VM
 
-postgresuser = 'postgres'
-postgrespass = ''
-application_url = '10.0.2.15'
+		text = File.read('/home/osqa/settings_local.py')
+		text = text.gsub(/-pguser-/, postgresuser)
+		text = text.gsub(/-pgpass-/, postgrespass)
+		text = text.gsub(/-applicurl-/, application_url)
 
-text = File.read('/home/osqa/settings_local.py')
-text = text.gsub("-pguser-", postgresuser)
-text = text.gsub("-pgpass-", postgrespass)
-text = text.gsub("-applicurl-", application_url)
+		# To write changes to the file, use:
+		File.open('/home/osqa/settings_local.py', "w") do |file|
+			file.write(text)
+		end
+	end
+	action :run
+end
 
-# To write changes to the file, use:
-File.open('/home/osqa/settings_local.py', "w") do |file|
-	file << text
+bash "syncing_the_database" do
+	user "root"
+	cwd "/home/osqa"
+	code <<-EOH
+		echo "no" | python manage.py syncdb --all
+	EOH
+end
+
+apache_site "osqa" do
+	enable true
+end
+
+bash "own_the_resource" do
+  user "root"
+  cwd "/home"
+  code <<-EOH
+  	chown -R www-data:www-data osqa
+  EOH
+end
+
+service "apache2" do
+	action [:enable, :restart]
 end
