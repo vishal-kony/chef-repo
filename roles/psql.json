@@ -1,0 +1,7 @@
+{
+	"name": "psql",
+	"description": "Recipe list",
+	"run_list": [
+		"recipe[database_setter]"
+	]
+}
