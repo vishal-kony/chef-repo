@@ -91,7 +91,3 @@ bash "own_the_resource" do
   	chown -R www-data:www-data osqa
   EOH
 end
-
-service "apache2" do
-	action [:enable, :restart]
-end
