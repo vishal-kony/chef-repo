@@ -7,30 +7,9 @@
 # All rights reserved - Do Not Redistribute
 #
 
-include_recipe 'postgresql::server'
-include_recipe 'postgresql::client'
-include_recipe 'database::postgresql'
 include_recipe 'python::default'
 include_recipe 'apache2::mod_wsgi'
-
-node.default['postgresql']['pg_hba'] = 
-[
-	{:comment => '#Authentication',:type => 'local', :db => 'all', :user => 'postgres', :addr => nil, :method => 'trust'},
-	{:comment => '#Ipv4 Connections',:type => 'host', :db => 'all', :user => 'all', :addr => '127.0.0.1/32', :method => 'md5'},
-	{:comment => '#Ipv6 Connections',:type => 'host', :db => 'all', :user => 'all', :addr => '::1/128', :method => 'md5'}
-]
-
-#creating database 'osqa'
-
-postgresql_database 'osqa' do
-  connection(
-    :host      => '127.0.0.1',
-    :port      => 5432,
-    :username  => 'postgres',
-    :password  => node['postgresql']['password']['postgres']
-  )
-  action :create
-end
+include_recipe 'postgresql::client'
 
 cookbook_file "requirements.txt" do
 	path "/var/tmp/requirements.txt"
@@ -68,18 +47,23 @@ for each_file in file_list
 	end
 end
 
+dbnodes = search(:node, "role:psql")
+
 #setting password and username for the database 
 ruby_block "replacing_settings_text" do
 	block do
 		postgresuser = 'postgres'
-		postgrespass = node['postgresql']['password']['postgres']
-		application_url = '10.0.2.15'  #entering the IP of the VM
+		postgrespass = dbnodes[0]['postgresql']['password']['postgres']
+		postgreshost = dbnodes[0]["network"]["interfaces"]["eth1"]["addresses"].keys[1]
+		postgresport = '5432'
+		application_url = node["ipaddress"]
 
 		text = File.read('/home/osqa/settings_local.py')
 		text = text.gsub(/-pguser-/, postgresuser)
 		text = text.gsub(/-pgpass-/, postgrespass)
 		text = text.gsub(/-applicurl-/, application_url)
-
+		text = text.gsub(/-pghost-/, postgreshost)
+		text = text.gsub(/-pgport-/, postgresport)
 		# To write changes to the file, use:
 		File.open('/home/osqa/settings_local.py', "w") do |file|
 			file.write(text)

@@ -10,6 +10,7 @@
 include_recipe 'postgresql::server'
 include_recipe 'postgresql::client'
 include_recipe 'database::postgresql'
+include_recipe 'python::default'
 
 node.default['postgresql']['pg_hba'] = 
 [
@@ -20,10 +21,14 @@ node.default['postgresql']['pg_hba'] =
 
 node.default['postgresql']['config']['listen_addresses'] = '*'
 
-ruby_block "replacing_settings_text" do
-	block do
-		b = search(:node, "role:psql")
-		print b
-	end
-	action :run
+python_pip "psycopg2"
+
+postgresql_database 'osqa' do
+  connection(
+    :host      => node[:network][:interfaces][:eth1][:addresses].detect{|k,v| v[:family] == "inet" }.first,
+    :port      => 5432,
+    :username  => 'postgres',
+    :password  => node['postgresql']['password']['postgres']
+  )
+  action :create
 end

@@ -30,8 +30,8 @@ DATABASES = {
         'NAME': 'osqa',
         'USER': '-pguser-',
         'PASSWORD': '-pgpass-',
-        'HOST': '',
-        'PORT': '',
+        'HOST': '-pghost-',
+        'PORT': '-pgport-',
     }
 }
 
