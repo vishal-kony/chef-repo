@@ -19,7 +19,6 @@
 
 default['haproxy']['user'] = "haproxy"
 default['haproxy']['group'] = "haproxy"
-
 default['haproxy']['enable_default_http'] = true
 default['haproxy']['mode'] = "http"
 default['haproxy']['incoming_address'] = "0.0.0.0"

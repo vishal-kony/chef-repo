@@ -50,11 +50,26 @@ if conf['enable_default_http']
       'default_backend' => 'servers-http'
     })
   end
+  #my added code
+  ips = Array.new
+  webnames = Array.new
+  members_array = Array.new
+
+  webnodes = search(:node , "role:osqa")
+  webnodes.each do |node|
+    ips.push(node["network"]["interfaces"]["eth1"]["addresses"].keys[1])
+    webnames.push(node.name)
+  end
+
+  data = webnames.zip(ips)
+  data.each do |webset|
+    members_array.push({"hostname" => webset[0],"ipaddress" => webset[1],"port" => 80})
+  end
 
   member_port = conf['member_port']
   pool = []
   pool << "option httpchk #{conf['httpchk']}" if conf['httpchk']
-  servers = node['haproxy']['members'].map do |member|
+  servers = members_array.map do |member|
     "#{member['hostname']} #{member['ipaddress']}:#{member['port'] || member_port} weight #{member['weight'] || member_weight} maxconn #{member['max_connections'] || member_max_conn} check"
   end
   haproxy_lb 'servers-http' do
