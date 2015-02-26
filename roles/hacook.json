@@ -1,0 +1,7 @@
+{
+	"name": "hacook",
+	"description": "Recipe list",
+	"run_list": [
+		"recipe[haproxy_setter]"
+	]
+}

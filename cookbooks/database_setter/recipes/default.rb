@@ -21,8 +21,6 @@ node.default['postgresql']['pg_hba'] =
 
 node.default['postgresql']['config']['listen_addresses'] = '*'
 
-python_pip "psycopg2"
-
 postgresql_database 'osqa' do
   connection(
     :host      => node[:network][:interfaces][:eth1][:addresses].detect{|k,v| v[:family] == "inet" }.first,

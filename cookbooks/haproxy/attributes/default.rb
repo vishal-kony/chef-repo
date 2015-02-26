@@ -27,12 +27,12 @@ default['haproxy']['incoming_port'] = 80
 default['haproxy']['members'] = [{
   "hostname" => "localhost",
   "ipaddress" => "127.0.0.1",
-  "port" => 4000,
+  "port" => 80,
   "ssl_port" => 4000
 }, {
   "hostname" => "localhost",
   "ipaddress" => "127.0.0.1",
-  "port" => 4001,
+  "port" => 80,
   "ssl_port" => 4001
 }]
 default['haproxy']['member_port'] = 8080
